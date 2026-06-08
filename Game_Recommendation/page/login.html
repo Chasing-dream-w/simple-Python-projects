@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏推荐系统 - 登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #0f1419;
+            color: #e6e6e6;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* 登录容器 */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            padding: 20px;
+        }
+        
+        .auth-box {
+            background-color: #1a1f2e;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        
+        .auth-header {
+            padding: 35px;
+            background-color: #252b3a;
+            text-align: center;
+            border-bottom: 1px solid #2d3444;
+        }
+        
+        .auth-logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #3a6bc8;
+        }
+        
+        .auth-title {
+            font-size: 28px;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        
+        .auth-subtitle {
+            color: #b0b3b8;
+            font-size: 16px;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid #2d3444;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #b0b3b8;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .auth-tab.active {
+            color: #3a6bc8;
+            border-bottom: 3px solid #3a6bc8;
+            background-color: rgba(58, 107, 200, 0.1);
+        }
+        
+        .auth-form {
+            padding: 35px;
+        }
+        
+        .auth-pane {
+            display: none;
+        }
+        
+        .auth-pane.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 22px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d0d3d8;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            background-color: #252b3a;
+            border: 1px solid #2d3444;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3a6bc8;
+        }
+        
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: #3a6bc8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+        }
+        
+        .auth-btn:hover {
+            background-color: #2d56a5;
+        }
+        
+        .auth-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #b0b3b8;
+            font-size: 14px;
+        }
+        
+        .auth-link {
+            color: #3a6bc8;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+        
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .message.error {
+            background-color: rgba(255, 87, 87, 0.1);
+            color: #ff5757;
+            border: 1px solid rgba(255, 87, 87, 0.3);
+            display: block;
+        }
+        
+        .message.success {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            display: block;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .auth-header {
+                padding: 25px;
+            }
+            
+            .auth-form {
+                padding: 25px;
+            }
+            
+            .auth-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <div class="auth-logo">🎮</div>
+                <h1 class="auth-title">游戏推荐系统</h1>
+                <p class="auth-subtitle">发现属于你的下一款游戏</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">登录</button>
+                <button class="auth-tab" data-tab="register">注册</button>
+            </div>
+            
+            <div class="auth-form">
+                <!-- 登录表单 -->
+                <div id="login-pane" class="auth-pane active">
+                    <div id="login-message" class="message"></div>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label class="form-label" for="login-username">用户名</label>
+                            <input type="text" id="login-username" class="form-input" placeholder="请输入用户名" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="login-password">密码</label>
+                            <input type="password" id="login-password" class="form-input" placeholder="请输入密码" required>
+                        </div>
+                        
+                        <button type="submit" class="auth-btn" id="login-btn">
+                            <span id="login-text">登录</span>
+                        </button>
+                        
+                        <div class="auth-footer">
+                            还没有账号？ <a class="auth-link" id="switch-to-register">立即注册</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- 注册表单 -->
+                <div id="register-pane" class="auth-pane">
+                    <div id="register-message" class="message"></div>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label class="form-label" for="register-username">用户名</label>
+                            <input type="text" id="register-username" class="form-input" placeholder="请输入用户名（3-12位字符）" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="register-email">电子邮箱</label>
+                            <input type="email" id="register-email" class="form-input" placeholder="请输入电子邮箱" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="register-password">密码</label>
+                            <input type="password" id="register-password" class="form-input" placeholder="请输入密码（至少6位）" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="register-confirm">确认密码</label>
+                            <input type="password" id="register-confirm" class="form-input" placeholder="请再次输入密码" required>
+                        </div>
+                        
+                        <button type="submit" class="auth-btn" id="register-btn">
+                            <span id="register-text">注册</span>
+                        </button>
+                        
+                        <div class="auth-footer">
+                            已有账号？ <a class="auth-link" id="switch-to-login">立即登录</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换登录/注册标签
+        document.querySelectorAll('.auth-tab').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // 更新活动标签按钮
+                document.querySelectorAll('.auth-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 显示对应标签内容
+                document.querySelectorAll('.auth-pane').forEach(pane => {
+                    pane.classList.remove('active');
+                });
+                document.getElementById(`${tabId}-pane`).classList.add('active');
+                
+                // 清空消息和表单
+                document.getElementById('login-message').className = 'message';
+                document.getElementById('register-message').className = 'message';
+                if (tabId === 'register') {
+                    document.getElementById('register-form').reset();
+                }
+            });
+        });
+        
+        // 切换登录/注册表单链接
+        document.getElementById('switch-to-register').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('[data-tab="register"]').classList.add('active');
+            
+            document.querySelectorAll('.auth-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.getElementById('register-pane').classList.add('active');
+            
+            // 清空登录表单消息
+            document.getElementById('login-message').className = 'message';
+        });
+        
+        document.getElementById('switch-to-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('[data-tab="login"]').classList.add('active');
+            
+            document.querySelectorAll('.auth-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.getElementById('login-pane').classList.add('active');
+            
+            // 清空注册表单消息
+            document.getElementById('register-message').className = 'message';
+        });
+        
+        // 登录表单提交处理
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const messageDiv = document.getElementById('login-message');
+            const loginBtn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            
+            // 验证输入
+            if (!username || !password) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '请输入用户名和密码';
+                return;
+            }
+            
+            // 显示加载状态
+            loginBtn.disabled = true;
+            loginText.innerHTML = '<span class="loading"></span>登录中...';
+            
+            try {
+                // 发送登录请求到后端
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = result.message;
+                    
+                    // 登录成功，跳转到主页面
+                    setTimeout(() => {
+                        window.location.href = '/main';
+                    }, 1000);
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = result.message;
+                    loginBtn.disabled = false;
+                    loginText.textContent = '登录';
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '网络错误，请稍后重试';
+                loginBtn.disabled = false;
+                loginText.textContent = '登录';
+            }
+        });
+        
+        // 注册表单提交处理
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('register-username').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm').value;
+            const messageDiv = document.getElementById('register-message');
+            const registerBtn = document.getElementById('register-btn');
+            const registerText = document.getElementById('register-text');
+            
+            // 前端验证
+            if (username.length < 3 || username.length > 12) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '用户名长度需为3-12位字符';
+                return;
+            }
+            
+            if (password.length < 6) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '密码长度至少为6位';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '两次输入的密码不一致';
+                return;
+            }
+            
+            // 显示加载状态
+            registerBtn.disabled = true;
+            registerText.innerHTML = '<span class="loading"></span>注册中...';
+            
+            try {
+                // 发送注册请求到后端
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password,
+                        confirm_password: confirmPassword
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = result.message;
+                    
+                    // 注册成功，清空表单
+                    document.getElementById('register-form').reset();
+                    
+                    // 自动切换到登录标签
+                    setTimeout(() => {
+                        document.querySelectorAll('.auth-tab').forEach(tab => {
+                            tab.classList.remove('active');
+                        });
+                        document.querySelector('[data-tab="login"]').classList.add('active');
+                        
+                        document.querySelectorAll('.auth-pane').forEach(pane => {
+                            pane.classList.remove('active');
+                        });
+                        document.getElementById('login-pane').classList.add('active');
+                        
+                        // 自动填充登录表单
+                        document.getElementById('login-username').value = username;
+                        document.getElementById('login-password').value = password;
+                    }, 1500);
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = result.message;
+                    registerBtn.disabled = false;
+                    registerText.textContent = '注册';
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '网络错误，请稍后重试';
+                registerBtn.disabled = false;
+                registerText.textContent = '注册';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏资讯 · CS & PUBG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #0f1419;
+            color: #e6e6e6;
+            line-height: 1.6;
+        }
+
+        /* 状态栏样式 — 与 main 保持一致 */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1a1f2e;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            padding: 12px 28px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            color: #b0b3b8;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            text-align: center;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-item:hover {
+            background-color: #252b3a;
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            background-color: #3a6bc8;
+            color: #ffffff;
+            box-shadow: 0 4px 8px rgba(58, 107, 200, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        /* 主页链接样式（与普通导航项相同，但无 active 状态） */
+        .home-link {
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 6px;
+            color: #b0b3b8;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            text-align: center;
+            background: transparent;
+        }
+        .home-link:hover {
+            background-color: #252b3a;
+            color: #ffffff;
+        }
+
+        /* 内容区域 */
+        .content {
+            margin-top: 90px;
+            padding: 30px;
+            min-height: calc(100vh - 90px);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #ffffff;
+            border-bottom: 2px solid #3a6bc8;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .post-list {
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .post-item {
+            display: flex;
+            padding: 20px;
+            border-bottom: 1px solid #2d3444;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            align-items: flex-start;
+        }
+
+        .post-item:hover {
+            background-color: #252b3a;
+        }
+
+        .post-item:last-child {
+            border-bottom: none;
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #2d3444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: white;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .post-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .post-author {
+            font-weight: bold;
+            color: #ffffff;
+            font-size: 16px;
+            background: #2d3444;
+            padding: 2px 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        .post-time {
+            color: #b0b3b8;
+            font-size: 13px;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .post-excerpt {
+            color: #d0d3d8;
+            font-size: 14px;
+            margin-bottom: 12px;
+            word-break: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 20px;
+            color: #b0b3b8;
+            font-size: 13px;
+        }
+
+        .post-stats span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .post-stats i {
+            font-style: normal;
+            font-size: 14px;
+        }
+
+        .load-more {
+            text-align: center;
+            padding: 20px;
+            color: #b0b3b8;
+            cursor: pointer;
+        }
+
+        .load-more:hover {
+            color: #3a6bc8;
+        }
+
+        .empty-placeholder {
+            text-align: center;
+            padding: 50px 20px;
+            color: #b0b3b8;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px 15px;
+                margin-top: 80px;
+            }
+
+            .post-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 22px;
+                margin-right: 15px;
+            }
+
+            .post-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏：主页(返回main)、CS、PUBG -->
+    <div class="status-bar">
+        <!-- 主页链接，点击返回 main.html -->
+        <a href="/main" class="home-link">
+            <span class="nav-icon">🏠</span>
+            <span>主页</span>
+        </a>
+        <!-- CS 筛选按钮（无跳转，用于切换资讯） -->
+        <div class="nav-item" data-filter="cs">
+            <span class="nav-icon">🔫</span>
+            <span>CS</span>
+        </div>
+        <!-- PUBG 筛选按钮 -->
+        <div class="nav-item" data-filter="pubg">
+            <span class="nav-icon">🪂</span>
+            <span>PUBG</span>
+        </div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="content">
+        <h1 class="page-title">游戏资讯</h1>
+
+        <div class="post-list" id="post-list">
+            <div class="empty-placeholder">加载中...</div>
+        </div>
+
+        <div class="load-more" id="load-more" onclick="loadMorePosts()">加载更多</div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- 临时虚假数据 ----------
+            const allNews = [
+                // CS 资讯
+                { id: 101, title: 'CS2 全新更新：武器调整 & 经济系统改动', summary: 'Valve 发布重大更新，AWP 价格回调，M4A4 弹匣扩容。', time: '2小时前', game: 'cs', views: 3421, comments: 58 },
+                { id: 102, title: 'IEM 悉尼站：FaZe 击败 MOUZ 夺冠', summary: 'FaZe Clan 在图三遗迹上完成逆转，ropz 获得 MVP。', time: '昨天', game: 'cs', views: 8923, comments: 124 },
+                { id: 103, title: 's1mple 专访：我仍想赢得 Major', summary: 'NaVi 明星选手谈队伍调整和个人状态。', time: '3天前', game: 'cs', views: 5670, comments: 42 },
+                { id: 104, title: 'CS2 创意工坊新地图推荐', summary: '这五张社区地图有望进入匹配池。', time: '5小时前', game: 'cs', views: 2100, comments: 17 },
+                { id: 105, title: 'BLAST 秋季小组赛晋级名单', summary: 'NaVi、Vitality 等强队顺利晋级。', time: '昨天', game: 'cs', views: 4300, comments: 31 },
+                // PUBG 资讯
+                { id: 201, title: 'PUBG 第24赛季即将开启：新地图 & 生存通行证', summary: '荣都加入普通匹配，通行证含有黑货箱皮肤。', time: '昨天', game: 'pubg', views: 7120, comments: 89 },
+                { id: 202, title: '玛莎拉蒂皮肤返场！合作者活动上线', summary: '三款颜色可选，可通过工坊获取。', time: '12小时前', game: 'pubg', views: 5600, comments: 43 },
+                { id: 203, title: 'PNC 2024 全明星赛程公布', summary: '比赛将于首尔举行，投票活动下周开启。', time: '1天前', game: 'pubg', views: 3340, comments: 27 },
+                { id: 204, title: '新武器 MP9 测评：近战利器', summary: '测试服数据解析，射速快但后座较大。', time: '3小时前', game: 'pubg', views: 2890, comments: 15 },
+                { id: 205, title: 'PUBG 开发信：反作弊系统升级', summary: '新内核驱动级防护即将实装。', time: '6天前', game: 'pubg', views: 1850, comments: 22 },
+                { id: 301, title: 'ESL 宣布与沙特杯合作', summary: '电竞世界杯将包含CS2和PUBG项目。', time: '4小时前', game: 'cs', views: 2750, comments: 18 },
+                { id: 302, title: 'PUBG 全球锦标赛观赛指南', summary: '竞猜活动即将开启，冠军皮肤预测。', time: '2天前', game: 'pubg', views: 4080, comments: 35 }
+            ];
+
+            // ---------- 全局变量 ----------
+            let currentFilter = 'all';          // 'all', 'cs', 'pubg'
+            let displayedCount = 0;
+            const pageSize = 5;
+
+            const postListEl = document.getElementById('post-list');
+            const loadMoreEl = document.getElementById('load-more');
+            const navItems = document.querySelectorAll('.nav-item'); // CS 和 PUBG 按钮
+
+            // 获取过滤后的资讯
+            function getFilteredNews() {
+                if (currentFilter === 'all') {
+                    return allNews;
+                } else {
+                    return allNews.filter(item => item.game === currentFilter);
+                }
+            }
+
+            // 渲染从 start 到 end 的资讯
+            function renderPosts(start, end) {
+                const filtered = getFilteredNews();
+
+                if (start === 0) {
+                    postListEl.innerHTML = '';
+                }
+
+                if (filtered.length === 0) {
+                    postListEl.innerHTML = '<div class="empty-placeholder">暂无相关游戏资讯</div>';
+                    loadMoreEl.style.display = 'none';
+                    displayedCount = 0;
+                    return;
+                }
+
+                const actualEnd = Math.min(end, filtered.length);
+                const fragment = document.createDocumentFragment();
+
+                for (let i = start; i < actualEnd; i++) {
+                    const news = filtered[i];
+
+                    const postDiv = document.createElement('div');
+                    postDiv.className = 'post-item';
+                    postDiv.setAttribute('data-id', news.id);
+                    postDiv.addEventListener('click', function() {
+                        window.location.href = `/news_detail?id=${news.id}`; // 详情页占位
+                    });
+
+                    // 左侧头像（游戏图标）
+                    const avatarDiv = document.createElement('div');
+                    avatarDiv.className = 'post-avatar';
+                    avatarDiv.textContent = news.game === 'cs' ? '🔫' : '🪂';
+
+                    // 内容区域
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'post-content';
+
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'post-header';
+                    const authorSpan = document.createElement('span');
+                    authorSpan.className = 'post-author';
+                    authorSpan.textContent = news.game === 'cs' ? 'CS资讯' : 'PUBG资讯';
+                    const timeSpan = document.createElement('span');
+                    timeSpan.className = 'post-time';
+                    timeSpan.textContent = news.time;
+
+                    headerDiv.appendChild(authorSpan);
+                    headerDiv.appendChild(timeSpan);
+
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'post-title';
+                    titleDiv.textContent = news.title;
+
+                    const excerptDiv = document.createElement('div');
+                    excerptDiv.className = 'post-excerpt';
+                    excerptDiv.textContent = news.summary;
+
+                    const statsDiv = document.createElement('div');
+                    statsDiv.className = 'post-stats';
+                    statsDiv.innerHTML = `
+                        <span><i>👁️</i> ${news.views.toLocaleString()}</span>
+                        <span><i>💬</i> ${news.comments}</span>
+                    `;
+
+                    contentDiv.appendChild(headerDiv);
+                    contentDiv.appendChild(titleDiv);
+                    contentDiv.appendChild(excerptDiv);
+                    contentDiv.appendChild(statsDiv);
+
+                    postDiv.appendChild(avatarDiv);
+                    postDiv.appendChild(contentDiv);
+
+                    fragment.appendChild(postDiv);
+                }
+
+                postListEl.appendChild(fragment);
+                displayedCount = actualEnd;
+
+                if (displayedCount >= filtered.length) {
+                    loadMoreEl.style.display = 'none';
+                } else {
+                    loadMoreEl.style.display = 'block';
+                }
+            }
+
+            // 加载更多（全局函数供 onclick 使用）
+            window.loadMorePosts = function() {
+                const filtered = getFilteredNews();
+                const nextStart = displayedCount;
+                const nextEnd = Math.min(displayedCount + pageSize, filtered.length);
+                if (nextStart < filtered.length) {
+                    renderPosts(nextStart, nextEnd);
+                }
+            };
+
+            // 重置并重新渲染（切换筛选时调用）
+            function resetAndRender() {
+                displayedCount = 0;
+                renderPosts(0, pageSize);
+            }
+
+            // 处理 CS / PUBG 点击事件
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除另一个按钮的 active 状态
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // 更新过滤器
+                    currentFilter = this.dataset.filter; // 'cs' 或 'pubg'
+                    resetAndRender();
+                });
+            });
+
+            // 初始化：默认显示全部资讯，CS/PUBG 按钮均不激活
+            // 注意：主页链接是 <a>，不参与筛选
+            currentFilter = 'all';
+            // 移除可能残留的 active 类
+            navItems.forEach(nav => nav.classList.remove('active'));
+            // 加载第一页
+            resetAndRender();
+        })();
+    </script>
+</body>
+</html>

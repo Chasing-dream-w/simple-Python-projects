@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBG玩家大师邀请赛 - 赛事日程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #0f1419;
+            color: #e6e6e6;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            background-color: #1a1f2e;
+            padding: 0 20px;
+            border-bottom: 1px solid #2d3444;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 70px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #3a6bc8;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .game-nav {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .game-nav-btn {
+            background: none;
+            border: none;
+            color: #b0b3b8;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .game-nav-btn:hover {
+            background-color: rgba(58, 107, 200, 0.1);
+            color: #d0d3d8;
+        }
+        
+        .game-nav-btn.active {
+            color: #3a6bc8;
+            background-color: rgba(58, 107, 200, 0.15);
+        }
+        
+        .game-nav-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #3a6bc8;
+            border-radius: 3px 3px 0 0;
+        }
+        
+        /* 主内容区域 */
+        .main-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 30px;
+        }
+        
+        /* 左侧菜单栏 */
+        .sidebar {
+            width: 250px;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-menu {
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .menu-title {
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .year-select {
+            width: 100%;
+            padding: 12px;
+            background-color: #252b3a;
+            border: 1px solid #2d3444;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: border 0.3s;
+        }
+        
+        .year-select:focus {
+            outline: none;
+            border-color: #3a6bc8;
+        }
+        
+        .tournament-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .tournament-item {
+            background-color: #252b3a;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #2d3444;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .tournament-item:hover {
+            border-color: #3a6bc8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tournament-item.active {
+            border-color: #3a6bc8;
+            background-color: rgba(58, 107, 200, 0.1);
+        }
+        
+        .tournament-name {
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .tournament-dates {
+            font-size: 14px;
+            color: #b0b3b8;
+        }
+        
+        /* 右侧内容区域 */
+        .content {
+            flex: 1;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .page-subtitle {
+            font-size: 18px;
+            color: #b0b3b8;
+            margin-bottom: 30px;
+        }
+        
+        .schedule-container {
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .schedule-title {
+            font-size: 24px;
+            color: #ffffff;
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .schedule-title-icon {
+            color: #3a6bc8;
+            font-size: 22px;
+        }
+        
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 300px;
+        }
+        
+        .schedule-item {
+            background-color: #252b3a;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #3a6bc8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .schedule-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+        
+        .schedule-info {
+            flex: 1;
+        }
+        
+        .schedule-name {
+            font-size: 20px;
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .schedule-date {
+            font-size: 16px;
+            color: #b0b3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .calendar-icon {
+            color: #3a6bc8;
+        }
+        
+        .schedule-level {
+            background-color: rgba(58, 107, 200, 0.15);
+            color: #3a6bc8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid rgba(58, 107, 200, 0.3);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-ended {
+            background-color: rgba(255, 87, 87, 0.15);
+            color: #ff5757;
+        }
+        
+        .status-upcoming {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4caf50;
+        }
+        
+        .status-ongoing {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(58, 107, 200, 0.2);
+            border-radius: 50%;
+            border-top-color: #3a6bc8;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #b0b3b8;
+            font-size: 16px;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 60px 0;
+            color: #ff5757;
+        }
+        
+        .refresh-btn {
+            background-color: #3a6bc8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background-color: #2d56a5;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 0;
+            }
+            
+            .logo {
+                margin-bottom: 15px;
+            }
+            
+            .game-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .game-nav-btn {
+                padding: 10px 15px;
+                font-size: 14px;
+                flex: 1;
+                text-align: center;
+            }
+            
+            .schedule-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .schedule-level {
+                align-self: flex-start;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-nav {
+                flex-wrap: wrap;
+            }
+            
+            .game-nav-btn {
+                flex-basis: calc(50% - 2px);
+                margin-bottom: 5px;
+            }
+            
+            .page-title {
+                font-size: 26px;
+            }
+            
+            .schedule-container {
+                padding: 20px;
+            }
+        }
+        /* 返回首页链接样式 */
+        .home-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: inherit;
+            transition: opacity 0.3s;
+        }
+
+        .home-link:hover {
+            opacity: 0.8;
+        }
+
+        .back-home-text {
+            font-size: 14px;
+            color: #3a6bc8;
+            margin-left: 8px;
+            padding-left: 12px;
+            border-left: 1px solid #2d3444;
+            font-weight: 500;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .back-home-text {
+                display: none; /* 在小屏幕上隐藏文字，只显示图标 */
+            }
+            
+            .home-link {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/main" class="home-link">
+                    <div class="logo-icon">🎮</div>
+                    <div class="logo-text">游戏赛事中心</div>
+                    <span class="back-home-text">返回首页</span>
+                </a>
+            </div>
+            
+            <div class="game-nav">
+                <button class="game-nav-btn active" data-game="PUBG">PUBG</button>
+                <button class="game-nav-btn" data-game="CSGO">CS:GO</button>
+                <button class="game-nav-btn" data-game="LOL">LOL</button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主内容区域 -->
+    <div class="main-container">
+        <!-- 左侧菜单栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <h2 class="menu-title">选择年份</h2>
+                <select class="year-select" id="year-select">
+                    <option value="2026">2026年</option>
+                    <option value="2025" selected>2025年</option>
+                    <option value="2024">2024年</option>
+                    <option value="2023">2023年</option>
+                    <option value="2022">2022年</option>
+                    <option value="2021">2021年</option>
+                    <option value="2020">2020年</option>
+                </select>
+                
+                <h2 class="menu-title">近期赛事</h2>
+                <div class="tournament-list" id="recent-tournaments">
+                    <!-- 动态加载近期赛事 -->
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 右侧内容区域 -->
+        <main class="content">
+            <h1 class="page-title" id="page-title">PUBG玩家大师邀请赛</h1>
+            <p class="page-subtitle" id="page-subtitle">2025年度赛事日程 - 发现最精彩的PUBG电竞赛事</p>
+            
+            <div class="schedule-container">
+                <h2 class="schedule-title">
+                    <span><span class="schedule-title-icon">📅</span> <span id="schedule-year">2025年</span>赛事日程</span>
+                    <span id="event-count">加载中...</span>
+                </h2>
+                
+                <div class="schedule-list" id="schedule-list">
+                    <!-- 动态加载赛事列表 -->
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">加载赛事数据中...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/api/check_session');
+            const data = await response.json();
+            
+            if (!data.logged_in) {
+                window.location.href = '/login';
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error('检查登录状态失败:', error);
+            return false;
+        }
+    }
+
+    // 页面加载时检查
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus().then(isLoggedIn => {
+            if (isLoggedIn) {
+                // 已登录，加载数据
+                loadTournaments(currentGame, currentYear);
+            }
+        });
+    });
+        // 全局变量
+        let currentGame = 'PUBG';
+        let currentYear = '2025';
+        let currentData = [];
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载赛事数据
+            loadTournaments(currentGame, currentYear);
+            
+            // 设置事件监听器
+            setupEventListeners();
+        });
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 游戏导航切换
+            document.querySelectorAll('.game-nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    document.querySelectorAll('.game-nav-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    
+                    // 为当前点击的按钮添加active类
+                    this.classList.add('active');
+                    
+                    // 更新当前游戏
+                    currentGame = this.getAttribute('data-game');
+                    
+                    // 更新页面标题
+                    updatePageTitle();
+                    
+                    // 重新加载赛事数据
+                    loadTournaments(currentGame, currentYear);
+                });
+            });
+            
+            // 年份选择切换
+            document.getElementById('year-select').addEventListener('change', function() {
+                currentYear = this.value;
+                document.getElementById('schedule-year').textContent = currentYear + '年';
+                
+                // 重新加载赛事数据
+                loadTournaments(currentGame, currentYear);
+            });
+        }
+        
+        // 更新页面标题
+        function updatePageTitle() {
+            const pageTitle = document.getElementById('page-title');
+            const pageSubtitle = document.getElementById('page-subtitle');
+            
+            const gameTitles = {
+                'PUBG': { main: 'PUBG玩家大师邀请赛', sub: '发现最精彩的PUBG电竞赛事' },
+                'CSGO': { main: 'CS:GO Major锦标赛', sub: '顶尖反恐精英赛事' },
+                'LOL': { main: '英雄联盟世界赛', sub: '全球最受欢迎的MOBA赛事' }
+            };
+            
+            if (gameTitles[currentGame]) {
+                pageTitle.textContent = gameTitles[currentGame].main;
+                pageSubtitle.textContent = `${currentYear}年度赛事日程 - ${gameTitles[currentGame].sub}`;
+            }
+        }
+        
+        // 加载赛事数据
+        async function loadTournaments(game, year) {
+            // 显示加载状态
+            showLoadingState();
+            
+            try {
+                // 模拟API请求 - 在实际应用中，这里应该是真实的API端点
+                // 例如: const response = await fetch(`/api/tournaments?game=${game}&year=${year}`);
+                // 这里使用模拟数据来演示
+                const mockData = await fetchMockData(game, year);
+                
+                if (mockData.success) {
+                    currentData = mockData.data;
+                    renderTournaments(currentData);
+                } else {
+                    showErrorState('无法加载赛事数据');
+                }
+            } catch (error) {
+                console.error('加载赛事数据时出错:', error);
+                showErrorState('网络错误，请稍后重试');
+            }
+        }
+        
+        // 显示加载状态
+        function showLoadingState() {
+            // 右侧赛事列表
+            const scheduleList = document.getElementById('schedule-list');
+            scheduleList.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">加载赛事数据中...</div>
+                </div>
+            `;
+            
+            // 左侧近期赛事
+            const recentTournaments = document.getElementById('recent-tournaments');
+            recentTournaments.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">加载中...</div>
+                </div>
+            `;
+            
+            // 更新事件计数
+            document.getElementById('event-count').textContent = '加载中...';
+        }
+        
+        // 显示错误状态
+        function showErrorState(message) {
+            const scheduleList = document.getElementById('schedule-list');
+            scheduleList.innerHTML = `
+                <div class="error-message">
+                    <div>${message}</div>
+                    <button class="refresh-btn" onclick="loadTournaments(currentGame, currentYear)">重新加载</button>
+                </div>
+            `;
+            
+            const recentTournaments = document.getElementById('recent-tournaments');
+            recentTournaments.innerHTML = `
+                <div class="error-message">
+                    <div>${message}</div>
+                </div>
+            `;
+            
+            document.getElementById('event-count').textContent = '加载失败';
+        }
+        
+        // 渲染赛事数据
+        function renderTournaments(data) {
+            // 渲染右侧赛事列表
+            renderScheduleList(data);
+            
+            // 渲染左侧近期赛事
+            renderRecentTournaments(data);
+            
+            // 更新事件计数
+            document.getElementById('event-count').textContent = `共 ${data.length} 个赛事`;
+        }
+        
+        // 渲染右侧赛事列表
+        function renderScheduleList(data) {
+            const scheduleList = document.getElementById('schedule-list');
+            
+            if (data.length === 0) {
+                scheduleList.innerHTML = `
+                    <div class="error-message">
+                        <div>当前年份暂无赛事数据</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 按开始日期排序
+            const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // 生成HTML
+            let html = '';
+            sortedData.forEach(tournament => {
+                // 确定状态
+                let statusText, statusClass;
+                const today = new Date();
+                const tournamentDate = new Date(tournament.date);
+                
+                if (tournament.status === 'ended') {
+                    statusText = '已结束';
+                    statusClass = 'status-ended';
+                } else if (tournament.status === 'ongoing') {
+                    statusText = '进行中';
+                    statusClass = 'status-ongoing';
+                } else {
+                    // 根据日期判断是即将开始还是已结束
+                    if (tournamentDate < today) {
+                        statusText = '已结束';
+                        statusClass = 'status-ended';
+                    } else {
+                        statusText = '即将开始';
+                        statusClass = 'status-upcoming';
+                    }
+                }
+                
+                html += `
+                    <div class="schedule-item">
+                        <div class="schedule-info">
+                            <div class="schedule-name">
+                                ${tournament.name}
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="schedule-date">
+                                <span class="calendar-icon">📅</span>
+                                开始日期: ${formatDate(tournament.date)}
+                            </div>
+                        </div>
+                        <div class="schedule-level">${tournament.level}</div>
+                    </div>
+                `;
+            });
+            
+            scheduleList.innerHTML = html;
+            
+            // 为每个赛事项添加点击事件
+            document.querySelectorAll('.schedule-item').forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    // 可以在这里添加点击事件，比如显示赛事详情
+                    console.log('点击了赛事:', sortedData[index].name);
+                });
+            });
+        }
+        
+        // 渲染左侧近期赛事
+        function renderRecentTournaments(data) {
+            const recentTournaments = document.getElementById('recent-tournaments');
+            
+            if (data.length === 0) {
+                recentTournaments.innerHTML = `
+                    <div class="error-message">
+                        <div>暂无赛事数据</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 按开始日期倒序排序，取最近3个
+            const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+            
+            // 生成HTML
+            let html = '';
+            sortedData.forEach(tournament => {
+                html += `
+                    <div class="tournament-item" data-id="${tournament.id}">
+                        <div class="tournament-name">${tournament.name}</div>
+                        <div class="tournament-dates">${formatDate(tournament.date)}</div>
+                    </div>
+                `;
+            });
+            
+            recentTournaments.innerHTML = html;
+            
+            // 为每个近期赛事项添加点击事件
+            document.querySelectorAll('.tournament-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有active类
+                    document.querySelectorAll('.tournament-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    
+                    // 为当前点击的项添加active类
+                    this.classList.add('active');
+                    
+                    // 可以在这里添加更多交互，比如高亮对应的右侧赛事
+                });
+            });
+        }
+        
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+        
+
+        async function fetchMockData(game, year) {
+
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+
+            const mockDatasets = {
+                'PUBG': {
+                    '2025': [
+                        { id: 1, name: 'PUBG全球锦标赛 2025', date: '2025-12-19', level: '全球总决赛', status: 'ended' },
+                        { id: 2, name: 'PUBG全球系列赛 10', date: '2025-11-28', level: 'S级赛事', status: 'ended' },
+                        { id: 3, name: 'PUBG全球系列赛 9', date: '2025-10-27', level: 'S级赛事', status: 'ended' },
+                        { id: 4, name: 'PUBG区域对抗赛 2025', date: '2025-09-15', level: 'A级赛事', status: 'ended' },
+                        { id: 5, name: 'PUBG洲际邀请赛 2025', date: '2025-08-05', level: 'S级赛事', status: 'ended' },
+                        { id: 6, name: 'PUBG全明星赛 2025', date: '2025-07-20', level: '表演赛', status: 'ended' },
+                    ],
+                    '2024': [
+                        { id: 7, name: 'PUBG全球锦标赛 2024', date: '2024-12-15', level: '全球总决赛', status: 'ended' },
+                        { id: 8, name: 'PUBG全球系列赛 8', date: '2024-11-10', level: 'S级赛事', status: 'ended' },
+                        { id: 9, name: 'PUBG全球系列赛 7', date: '2024-09-22', level: 'S级赛事', status: 'ended' },
+                    ],
+                    '2026': [
+                        { id: 10, name: 'PUBG洲际邀请赛 2026', date: '2026-01-15', level: 'S级赛事', status: 'upcoming' },
+                        { id: 11, name: 'PUBG春季公开赛 2026', date: '2026-03-10', level: 'A级赛事', status: 'upcoming' },
+                        { id: 12, name: 'PUBG全球系列赛 11', date: '2026-05-20', level: 'S级赛事', status: 'upcoming' },
+                    ]
+                },
+                'CSGO': {
+                    '2025': [
+                        { id: 13, name: 'CS:GO Major锦标赛 2025', date: '2025-11-10', level: '全球总决赛', status: 'ended' },
+                        { id: 14, name: 'CS:GO职业联赛第18季', date: '2025-09-22', level: 'S级赛事', status: 'ended' },
+                        { id: 15, name: 'CS:GO IEM科隆 2025', date: '2025-08-15', level: 'S级赛事', status: 'ended' },
+                        { id: 16, name: 'CS:GO BLAST Premier 2025', date: '2025-07-05', level: 'A级赛事', status: 'ended' },
+                    ],
+                    '2026': [
+                        { id: 17, name: 'CS:GO IEM卡托维兹 2026', date: '2026-02-05', level: 'S级赛事', status: 'upcoming' },
+                        { id: 18, name: 'CS:GO ESL Pro League 第19季', date: '2026-04-10', level: 'S级赛事', status: 'upcoming' },
+                    ]
+                },
+                'LOL': {
+                    '2025': [
+                        { id: 19, name: '英雄联盟全球总决赛 2025', date: '2025-10-05', level: '全球总决赛', status: 'ended' },
+                        { id: 20, name: '英雄联盟季中冠军赛 2025', date: '2025-05-10', level: 'S级赛事', status: 'ended' },
+                        { id: 21, name: '英雄联盟全明星赛 2025', date: '2025-12-15', level: '表演赛', status: 'upcoming' },
+                    ],
+                    '2026': [
+                        { id: 22, name: '英雄联盟区域联赛 2026春季赛', date: '2026-01-20', level: 'A级赛事', status: 'upcoming' },
+                        { id: 23, name: '英雄联盟季中冠军赛 2026', date: '2026-05-15', level: 'S级赛事', status: 'upcoming' },
+                    ]
+                }
+            };
+            
+            // 获取对应游戏和年份的数据
+            let data = [];
+            if (mockDatasets[game] && mockDatasets[game][year]) {
+                data = mockDatasets[game][year];
+            } else if (mockDatasets[game]) {
+                // 如果该年份没有数据，返回空数组
+                data = [];
+            } else {
+                // 如果该游戏没有数据，返回通用数据
+                data = [
+                    { id: 999, name: `${game} ${year}年度赛事`, date: `${year}-06-01`, level: 'A级赛事', status: 'upcoming' },
+                    { id: 998, name: `${game} 区域联赛 ${year}`, date: `${year}-03-15`, level: 'B级赛事', status: 'ended' },
+                ];
+            }
+            
+            // 返回模拟的API响应
+            return {
+                success: true,
+                data: data
+            };
+        }
+    </script>
+</body>
+</html>

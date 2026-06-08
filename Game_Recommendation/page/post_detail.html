@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帖子详情 - 玩家社区</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #0f1419;
+            color: #e6e6e6;
+            line-height: 1.6;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1a1f2e;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            padding: 12px 28px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            color: #b0b3b8;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-item:hover {
+            background-color: #252b3a;
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            background-color: #3a6bc8;
+            color: #ffffff;
+            box-shadow: 0 4px 8px rgba(58, 107, 200, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        /* 内容区域 */
+        .content {
+            margin-top: 90px;
+            padding: 30px;
+            min-height: calc(100vh - 90px);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #ffffff;
+            border-bottom: 2px solid #3a6bc8;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* 帖子卡片 */
+        .post-detail-card {
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        /* 作者信息 */
+        .post-author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2d3444;
+        }
+
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #3a6bc8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-right: 20px;
+        }
+
+        .author-details {
+            flex: 1;
+        }
+
+        .author-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .post-time {
+            color: #b0b3b8;
+            font-size: 14px;
+        }
+
+        /* 帖子标题 */
+        .post-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* 帖子正文 */
+        .post-content {
+            color: #e0e0e0;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* 互动按钮区域 */
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+            border-top: 1px solid #2d3444;
+            border-bottom: 1px solid #2d3444;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #b0b3b8;
+            cursor: pointer;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            color: #3a6bc8;
+        }
+
+        .action-btn i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .action-count {
+            font-size: 13px;
+        }
+
+        /* 评论区标题 */
+        .comments-title {
+            font-size: 20px;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        /* 评论列表 */
+        .comments-list {
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .comment-item {
+            display: flex;
+            padding: 20px 0;
+            border-bottom: 1px solid #2d3444;
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4e5a73;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .comment-time {
+            color: #b0b3b8;
+            font-size: 12px;
+        }
+
+        .comment-text {
+            color: #d0d3d8;
+            font-size: 15px;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            color: #b0b3b8;
+            font-size: 13px;
+        }
+
+        .comment-actions span {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .comment-actions span:hover {
+            color: #3a6bc8;
+        }
+
+        /* 回复输入框 */
+        .reply-box {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .reply-input {
+            flex: 1;
+            background-color: #252b3a;
+            border: 1px solid #2d3444;
+            border-radius: 8px;
+            padding: 15px;
+            color: #ffffff;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .reply-input:focus {
+            outline: none;
+            border-color: #3a6bc8;
+        }
+
+        .reply-submit {
+            background-color: #3a6bc8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            align-self: flex-end;
+        }
+
+        .reply-submit:hover {
+            background-color: #2d56a5;
+        }
+
+        /* 加载中 */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #b0b3b8;
+        }
+
+        /* 返回链接 */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #b0b3b8;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .back-link:hover {
+            color: #3a6bc8;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px 15px;
+                margin-top: 80px;
+            }
+
+            .post-detail-card, .comments-list, .reply-box {
+                padding: 20px;
+            }
+
+            .post-title {
+                font-size: 20px;
+            }
+
+            .author-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .reply-box {
+                flex-direction: column;
+            }
+
+            .reply-submit {
+                align-self: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <a href="/main" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>首页</span>
+        </a>
+        <a href="/post_list" class="nav-item active">
+            <span class="nav-icon">👥</span>
+            <span>社区</span>
+        </a>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="content">
+        <a href="/post_list" class="back-link">← 返回社区列表</a>
+
+        <div id="post-detail-container">
+            <div class="loading">加载帖子详情...</div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+            function getUrlParam(name) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(name);
+            }
+
+            let currentPostId = null;
+
+            // 加载帖子详情和评论
+            async function loadPostDetail(postId) {
+                currentPostId = postId;
+                const container = document.getElementById('post-detail-container');
+                container.innerHTML = '<div class="loading">加载帖子详情...</div>';
+
+                try {
+                    // 同时获取帖子详情和评论
+                    const [postRes, commentsRes] = await Promise.all([
+                        fetch(`/api/post/${postId}`),
+                        fetch(`/api/post/${postId}/comments`)
+                    ]);
+
+                    const postResult = await postRes.json();
+                    const commentsResult = await commentsRes.json();
+
+                    if (postResult.success) {
+                        renderPostDetail(postResult.post, commentsResult.success ? commentsResult.comments : []);
+                    } else {
+                        container.innerHTML = '<div class="loading">帖子不存在或已删除</div>';
+                    }
+                } catch (error) {
+                    console.error('获取帖子失败:', error);
+                    container.innerHTML = '<div class="loading">网络错误</div>';
+                }
+            }
+
+            // 渲染帖子详情和评论
+            function renderPostDetail(post, comments) {
+                const container = document.getElementById('post-detail-container');
+
+                // 构建评论区HTML
+                let commentsHtml = '';
+                if (comments.length === 0) {
+                    commentsHtml = '<div style="padding: 20px; text-align: center; color: #b0b3b8;">暂无评论，快来抢沙发吧~</div>';
+                } else {
+                    comments.forEach(c => {
+                        commentsHtml += `
+                            <div class="comment-item">
+                                <div class="comment-avatar">${c.author ? c.author.charAt(0).toUpperCase() : 'U'}</div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <span class="comment-author">${c.author}</span>
+                                        <span class="comment-time">${c.time}</span>
+                                    </div>
+                                    <div class="comment-text">${c.content.replace(/\n/g, '<br>')}</div>
+                                    <div class="comment-actions">
+                                        <span onclick="likeComment(${c.id})"><i>👍</i> ${c.likes}</span>
+                                        <span onclick="replyToComment(${c.id})"><i>↩️</i> 回复</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                const html = `
+                    <div class="post-detail-card">
+                        <div class="post-author-info">
+                            <div class="author-avatar">${post.author ? post.author.charAt(0).toUpperCase() : 'U'}</div>
+                            <div class="author-details">
+                                <div class="author-name">${post.author}</div>
+                                <div class="post-time">${post.time}</div>
+                            </div>
+                        </div>
+
+                        <h1 class="post-title">${post.title}</h1>
+                        <div class="post-content">${post.content.replace(/\n/g, '<br>')}</div>
+
+                        <div class="post-actions">
+                            <div class="action-btn" onclick="likePost()">
+                                <i>👍</i>
+                                <span class="action-count" id="like-count">${post.likes}</span>
+                            </div>
+                            <div class="action-btn" onclick="sharePost()">
+                                <i>🔄</i>
+                                <span class="action-count">分享</span>
+                            </div>
+                            <!-- 收藏按钮已移除 -->
+                            <div class="action-btn" onclick="scrollToComment()">
+                                <i>💬</i>
+                                <span class="action-count">${post.comments}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="comments-title">全部评论 (${post.comments})</h2>
+
+                    <div class="comments-list" id="comments-list">
+                        ${commentsHtml}
+                    </div>
+
+                    <div class="reply-box">
+                        <textarea class="reply-input" id="comment-input" placeholder="写下你的评论..."></textarea>
+                        <button class="reply-submit" onclick="submitComment()">发表评论</button>
+                    </div>
+                `;
+                container.innerHTML = html;
+            }
+
+            // 点赞帖子
+            async function likePost() {
+                if (!currentPostId) return;
+                try {
+                    const response = await fetch(`/api/post/${currentPostId}/like`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        // 更新点赞数显示
+                        const likeSpan = document.getElementById('like-count');
+                        likeSpan.textContent = parseInt(likeSpan.textContent) + 1;
+                    } else {
+                        alert(result.message || '点赞失败');
+                    }
+                } catch (error) {
+                    console.error('点赞出错:', error);
+                    alert('网络错误');
+                }
+            }
+
+            // 提交评论
+            async function submitComment() {
+                const input = document.getElementById('comment-input');
+                const content = input.value.trim();
+                if (!content) {
+                    alert('评论内容不能为空');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/post/${currentPostId}/comment`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        // 清空输入框
+                        input.value = '';
+                        // 重新加载评论列表（或动态添加）
+                        refreshComments();
+                    } else {
+                        alert(result.message || '评论失败');
+                    }
+                } catch (error) {
+                    console.error('评论出错:', error);
+                    alert('网络错误');
+                }
+            }
+
+            // 刷新评论列表
+            async function refreshComments() {
+                try {
+                    const response = await fetch(`/api/post/${currentPostId}/comments`);
+                    const result = await response.json();
+                    if (result.success) {
+                        // 重新渲染评论区
+                        const commentsList = document.getElementById('comments-list');
+                        let html = '';
+                        if (result.comments.length === 0) {
+                            html = '<div style="padding: 20px; text-align: center; color: #b0b3b8;">暂无评论，快来抢沙发吧~</div>';
+                        } else {
+                            result.comments.forEach(c => {
+                                html += `
+                                    <div class="comment-item">
+                                        <div class="comment-avatar">${c.author ? c.author.charAt(0).toUpperCase() : 'U'}</div>
+                                        <div class="comment-content">
+                                            <div class="comment-header">
+                                                <span class="comment-author">${c.author}</span>
+                                                <span class="comment-time">${c.time}</span>
+                                            </div>
+                                            <div class="comment-text">${c.content.replace(/\n/g, '<br>')}</div>
+                                            <div class="comment-actions">
+                                                <span onclick="likeComment(${c.id})"><i>👍</i> ${c.likes}</span>
+                                                <span onclick="replyToComment(${c.id})"><i>↩️</i> 回复</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+                        commentsList.innerHTML = html;
+                        // 更新评论区标题的评论数
+                        const commentsTitle = document.querySelector('.comments-title');
+                        if (commentsTitle) {
+                            commentsTitle.textContent = `全部评论 (${result.comments.length})`;
+                        }
+                        // 更新帖子卡片中的评论数
+                        const commentCountSpan = document.querySelector('.action-btn:last-child .action-count');
+                        if (commentCountSpan) {
+                            commentCountSpan.textContent = result.comments.length;
+                        }
+                    }
+                } catch (error) {
+                    console.error('刷新评论失败:', error);
+                }
+            }
+
+            // 辅助函数
+            function sharePost() {
+                alert('分享功能开发中');
+            }
+
+            function scrollToComment() {
+                document.querySelector('.reply-input').focus();
+            }
+
+            function likeComment(commentId) {
+                alert('评论点赞功能开发中');
+            }
+
+            function replyToComment(commentId) {
+                alert('回复功能开发中');
+            }
+
+            // 初始化
+            window.onload = function() {
+                const postId = getUrlParam('id');
+                if (postId) {
+                    loadPostDetail(postId);
+                } else {
+                    document.getElementById('post-detail-container').innerHTML = '<div class="loading">缺少帖子ID</div>';
+                }
+            };
+    </script>
+</body>
+</html>

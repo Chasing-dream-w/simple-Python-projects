@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能算法推荐 - 游戏推荐系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background-color: #0f1419;
+            color: #e6e6e6;
+            line-height: 1.6;
+        }
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1a1f2e;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+        }
+        .nav-item {
+            padding: 12px 28px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            color: #b0b3b8;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            text-align: center;
+        }
+        .nav-item:hover {
+            background-color: #252b3a;
+            color: #ffffff;
+        }
+        .nav-item.active {
+            background-color: #3a6bc8;
+            color: #ffffff;
+            box-shadow: 0 4px 8px rgba(58, 107, 200, 0.3);
+        }
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        .content {
+            margin-top: 90px;
+            padding: 30px;
+            min-height: calc(100vh - 90px);
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #ffffff;
+            border-bottom: 2px solid #3a6bc8;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        .recommend-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            background-color: #1a1f2e;
+            padding: 10px 20px;
+            border-radius: 12px;
+            width: fit-content;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 32px;
+            background-color: #252b3a;
+            border: none;
+            border-radius: 30px;
+            color: #b0b3b8;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background-color: #3a6bc8;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(58, 107, 200, 0.3);
+        }
+        .tab-btn:hover:not(.active) {
+            background-color: #2d3444;
+            color: #ffffff;
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .game-card {
+            background-color: #252b3a;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #2d3444;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-color: #3a6bc8;
+        }
+        .game-img-container {
+            width: 100%;
+            height: 160px;
+            overflow: hidden;
+            background-color: #2d3444;
+            position: relative;
+        }
+        .game-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .game-card:hover .game-img {
+            transform: scale(1.05);
+        }
+        .img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6a8fd9;
+            font-size: 48px;
+            background: linear-gradient(135deg, #2d3444 0%, #3a4459 100%);
+        }
+        .game-info {
+            padding: 18px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .game-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+            line-height: 1.4;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .game-price {
+            font-size: 18px;
+            color: #3a6bc8;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .game-price.free {
+            color: #4ecdc4;
+        }
+        .game-score {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #1a1f2e;
+            border-radius: 4px;
+            color: #ffd700;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .game-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 12px 0 8px;
+        }
+        .game-tag {
+            background-color: #1a1f2e;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            color: #b0b3b8;
+            border: 1px solid #2d3444;
+        }
+        .recommend-reason {
+            background-color: #1a1f2e;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #b0b3b8;
+            border-left: 3px solid #3a6bc8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .recommend-reason i {
+            color: #ffc107;
+            font-style: normal;
+        }
+        .loading-state, .empty-state {
+            text-align: center;
+            padding: 60px;
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            color: #b0b3b8;
+        }
+        .error-state {
+            text-align: center;
+            padding: 60px;
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            color: #e74c3c;
+        }
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px 15px;
+                margin-top: 80px;
+            }
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+            .tab-btn {
+                padding: 8px 20px;
+                font-size: 14px;
+            }
+            .recommend-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <a href="/main" class="nav-item"><span class="nav-icon">🏠</span><span>首页</span></a>
+        <a href="/main#library" class="nav-item"><span class="nav-icon">🎮</span><span>游戏库</span></a>
+        <a href="/tournaments" class="nav-item"><span class="nav-icon">📅</span><span>赛事</span></a>
+        <a href="/main#profile" class="nav-item"><span class="nav-icon">👤</span><span>我</span></a>
+    </div>
+
+    <div class="content">
+        <h1 class="page-title">✨ 智能算法推荐</h1>
+
+        <div class="recommend-tabs">
+            <button class="tab-btn active" data-tab="hot">🔥 热门游戏</button>
+            <button class="tab-btn" data-tab="collaborative">🎯 个性推荐</button>
+            <button class="tab-btn" data-tab="hybrid">🎲 混合推荐</button>
+            <button class="tab-btn" data-tab="typebased">🏷️ 类型推荐</button>
+        </div>
+
+        <div id="hot-games-container" class="tab-content active">
+            <div class="loading-state">加载热门游戏中...</div>
+        </div>
+        <div id="collaborative-container" class="tab-content" style="display: none;">
+            <div class="loading-state">正在为你生成个性化推荐...</div>
+        </div>
+        <div id="hybrid-container" class="tab-content" style="display: none;">
+            <div class="loading-state">🔄 正在生成混合推荐...</div>
+        </div>
+        <div id="typebased-container" class="tab-content" style="display: none;">
+            <div class="loading-state">🏷️ 正在分析你的游戏类型偏好...</div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'hot';
+        const hotContainer = document.getElementById('hot-games-container');
+        const collaborativeContainer = document.getElementById('collaborative-container');
+        const hybridContainer = document.getElementById('hybrid-container');
+        const typebasedContainer = document.getElementById('typebased-container');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            tabBtns.forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabId) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            if (tabId === 'hot') {
+                hotContainer.style.display = 'block';
+                collaborativeContainer.style.display = 'none';
+                hybridContainer.style.display = 'none';
+                typebasedContainer.style.display = 'none';
+                if (hotContainer.querySelector('.loading-state') || hotContainer.children.length === 0) loadHotGames();
+            } else if (tabId === 'collaborative') {
+                hotContainer.style.display = 'none';
+                collaborativeContainer.style.display = 'block';
+                hybridContainer.style.display = 'none';
+                typebasedContainer.style.display = 'none';
+                if (collaborativeContainer.querySelector('.loading-state') || collaborativeContainer.children.length === 0) loadCollaborativeRecommendations();
+            } else if (tabId === 'hybrid') {
+                hotContainer.style.display = 'none';
+                collaborativeContainer.style.display = 'none';
+                hybridContainer.style.display = 'block';
+                typebasedContainer.style.display = 'none';
+                if (hybridContainer.querySelector('.loading-state') || hybridContainer.children.length === 0) loadHybridRecommendations();
+            } else if (tabId === 'typebased') {
+                hotContainer.style.display = 'none';
+                collaborativeContainer.style.display = 'none';
+                hybridContainer.style.display = 'none';
+                typebasedContainer.style.display = 'block';
+                if (typebasedContainer.querySelector('.loading-state') || typebasedContainer.children.length === 0) loadTypeBasedRecommendations();
+            }
+        }
+
+        async function loadHotGames() {
+            hotContainer.innerHTML = '<div class="loading-state">🔥 加载热门游戏中...</div>';
+            try {
+                const res = await fetch('/api/recommend/hot', { credentials: 'same-origin' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.success) renderGameCards(data.games, hotContainer, false);
+                else hotContainer.innerHTML = `<div class="error-state">❌ ${data.message || '加载失败'}</div>`;
+            } catch (error) {
+                hotContainer.innerHTML = '<div class="error-state">网络错误，请刷新重试</div>';
+            }
+        }
+
+        async function loadCollaborativeRecommendations() {
+            collaborativeContainer.innerHTML = '<div class="loading-state">🎯 正在分析你的游戏偏好，生成专属推荐...</div>';
+            try {
+                const res = await fetch('/api/recommend/collaborative', { credentials: 'same-origin' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.success) {
+                    if (data.games && data.games.length > 0) renderGameCards(data.games, collaborativeContainer, true);
+                    else collaborativeContainer.innerHTML = '<div class="empty-state">📭 暂无推荐内容，多玩几款游戏试试吧~</div>';
+                } else {
+                    collaborativeContainer.innerHTML = `<div class="error-state">❌ ${data.message || '推荐生成失败'}</div>`;
+                }
+            } catch (error) {
+                collaborativeContainer.innerHTML = '<div class="error-state">网络错误，请稍后重试</div>';
+            }
+        }
+
+        async function loadHybridRecommendations() {
+            hybridContainer.innerHTML = '<div class="loading-state">🔄 正在生成混合推荐...</div>';
+            try {
+                const res = await fetch('/api/recommend/hybrid', { credentials: 'same-origin' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.success) {
+                    if (data.games && data.games.length > 0) renderGameCards(data.games, hybridContainer, true);
+                    else hybridContainer.innerHTML = '<div class="empty-state">📭 暂无混合推荐，多玩几款低分游戏试试吧~</div>';
+                } else {
+                    hybridContainer.innerHTML = `<div class="error-state">❌ ${data.message || '推荐生成失败'}</div>`;
+                }
+            } catch (error) {
+                hybridContainer.innerHTML = '<div class="error-state">网络错误，请稍后重试</div>';
+            }
+        }
+
+        async function loadTypeBasedRecommendations() {
+            typebasedContainer.innerHTML = '<div class="loading-state">🏷️ 正在分析你的游戏类型偏好...</div>';
+            try {
+                const res = await fetch('/api/recommend/type_based', { credentials: 'same-origin' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.success) {
+                    if (data.games && data.games.length > 0) renderGameCards(data.games, typebasedContainer, true);
+                    else typebasedContainer.innerHTML = '<div class="empty-state">📭 暂无类型推荐，多玩几款游戏以便分析你的偏好吧~</div>';
+                } else {
+                    typebasedContainer.innerHTML = `<div class="error-state">❌ ${data.message || '推荐生成失败'}</div>`;
+                }
+            } catch (error) {
+                typebasedContainer.innerHTML = '<div class="error-state">网络错误，请稍后重试</div>';
+            }
+        }
+
+        function renderGameCards(games, container, showReason) {
+            if (!games || games.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无游戏数据</div>';
+                return;
+            }
+            const grid = document.createElement('div');
+            grid.className = 'game-grid';
+            games.forEach(game => grid.appendChild(createGameCard(game, showReason)));
+            container.innerHTML = '';
+            container.appendChild(grid);
+        }
+
+        function createGameCard(game, showReason) {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            const gameId = game.id;
+            const gameName = game.name || '未知游戏';
+            const price = game.price || 0;
+            const priceClass = price === 0 ? 'game-price free' : 'game-price';
+            const priceText = price === 0 ? '免费' : `¥${price}`;
+            const score = game.score || 0;
+            const scoreHtml = score > 0 ? `<span class="game-score">⭐ ${score}</span>` : '';
+
+            let tagsArray = [];
+            if (game.tag) {
+                if (typeof game.tag === 'string') {
+                    tagsArray = game.tag.includes(',') ? game.tag.split(',').map(t => t.trim()) : [game.tag];
+                } else if (Array.isArray(game.tag)) tagsArray = game.tag;
+            }
+            const displayTags = tagsArray.slice(0, 3);
+            const imgPath = `/img/${gameId}.jpg`;
+            const imgFallback = gameName.charAt(0);
+
+            let reasonHtml = '';
+            if (showReason && game.reason_game) {
+                reasonHtml = `
+                    <div class="recommend-reason">
+                        <i>🎯</i> 你曾游玩过 <strong style="color:#3a6bc8;">${escapeHtml(game.reason_game)}</strong>，这款 <strong style="color:#4ecdc4;">${escapeHtml(gameName)}</strong> 你也可以试一试
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="game-img-container">
+                    <img src="${imgPath}" alt="${escapeHtml(gameName)}" class="game-img"
+                         onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\\'img-placeholder\\'>${escapeHtml(imgFallback)}</div>'">
+                </div>
+                <div class="game-info">
+                    <h3 class="game-name">${escapeHtml(gameName)}${scoreHtml}</h3>
+                    <div class="${priceClass}">${priceText}</div>
+                    <div class="game-tags">
+                        ${displayTags.map(tag => `<span class="game-tag">${escapeHtml(tag)}</span>`).join('')}
+                        ${tagsArray.length > 3 ? '<span class="game-tag">...</span>' : ''}
+                    </div>
+                    ${reasonHtml}
+                </div>
+            `;
+            card.addEventListener('click', () => window.location.href = `/game_detail?id=${gameId}`);
+            return card;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m] || m));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            tabBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
+            loadHotGames();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发表新帖 - 玩家社区</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #0f1419;
+            color: #e6e6e6;
+            line-height: 1.6;
+        }
+
+        /* 状态栏样式 - 与main.html一致 */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1a1f2e;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            padding: 12px 28px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            color: #b0b3b8;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-item:hover {
+            background-color: #252b3a;
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            background-color: #3a6bc8;
+            color: #ffffff;
+            box-shadow: 0 4px 8px rgba(58, 107, 200, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        /* 内容区域 */
+        .content {
+            margin-top: 90px;
+            padding: 30px;
+            min-height: calc(100vh - 90px);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #ffffff;
+            border-bottom: 2px solid #3a6bc8;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* 发帖表单 */
+        .post-form {
+            background-color: #1a1f2e;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #252b3a;
+            border: 1px solid #2d3444;
+            border-radius: 8px;
+            color: #e6e6e6;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3a6bc8;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23b0b3b8'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .submit-btn {
+            background-color: #3a6bc8;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #2d56a5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(58, 107, 200, 0.4);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #b0b3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #3a6bc8;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px 15px;
+                margin-top: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <a href="/main" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>首页</span>
+        </a>
+        <a href="/post_list" class="nav-item">
+            <span class="nav-icon">👥</span>
+            <span>社区</span>
+        </a>
+        <a href="/profile" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>我</span>
+        </a>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="content">
+        <h1 class="page-title">发表新帖</h1>
+
+        <div class="post-form">
+            <form id="postForm">
+                <div class="form-group">
+                    <label class="form-label">帖子主题</label>
+                    <input type="text" class="form-control" id="topic" placeholder="请输入标题" required maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">选择分区</label>
+                    <select class="form-control" id="sector" required>
+                        <option value="" disabled selected>-- 请选择分区 --</option>
+                        <option value="综合讨论">综合讨论</option>
+                        <option value="攻略分享">攻略分享</option>
+                        <option value="求助答疑">求助答疑</option>
+                        <option value="闲聊水区">闲聊水区</option>
+                        <option value="资源分享">资源分享</option>
+                        <option value="游戏安利">游戏安利</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">帖子内容</label>
+                    <textarea class="form-control" id="content" placeholder="写下你想分享的内容..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">发布帖子</button>
+            </form>
+
+            <a href="/post_list" class="back-link">← 返回社区</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('postForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const topic = document.getElementById('topic').value.trim();
+            const sector = document.getElementById('sector').value;
+            const content = document.getElementById('content').value.trim();
+
+            if (!topic || !sector || !content) {
+                alert('请填写完整信息');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/create_post', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ topic, sector, content })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('发布成功！');
+                    window.location.href = '/post_list';
+                } else {
+                    alert(result.message || '发布失败，请重试');
+                }
+            } catch (error) {
+                console.error('发布出错:', error);
+                alert('网络错误，请稍后重试');
+            }
+        });
+    </script>
+</body>
+</html>
